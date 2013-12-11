@@ -57,31 +57,35 @@ public class Solution
 		List<List<Paper>> allPaths = new ArrayList<List<Paper>>();
 		for (Paper paper : fromPapers)
 		{
-			Queue<Paper> q = new LinkedList<Paper>();
-			Set<Paper> visited = new HashSet<Paper>();
-			q.add(paper);
-			visited.add(paper);
 			List<Paper> possiblePath = new ArrayList<Paper>();
+			Queue<List<Paper>> sequences = new LinkedList<List<Paper>>();
+			sequences.add(possiblePath);
+			Queue<Paper> q = new LinkedList<Paper>();
+			q.add(paper);
+			Set<Paper> visited = new HashSet<Paper>();
 
 			while (!q.isEmpty())
 			{
 				Paper p = q.remove();
-				possiblePath.add(p);
+				visited.add(p);
+				List<Paper> currentPath = sequences.remove();
+				currentPath.add(p);
+
 				if (p.authors.contains(toAuthor))
 				{
-					allPaths.add(new ArrayList<Paper>(possiblePath));
+					allPaths.add(new ArrayList<Paper>(currentPath));
 				}
 
 				if (p.refs.size() == 0)
 				{
-					possiblePath.remove(p);
+					currentPath.remove(p);
 				}
 				for (Paper ref : p.refs)
 				{
 					if (!visited.contains(ref))
 					{
 						q.add(ref);
-						visited.add(ref);
+						sequences.add(new ArrayList<Paper>(currentPath));
 					}
 				}
 			}
@@ -92,7 +96,7 @@ public class Solution
 	@SuppressWarnings("nls")
 	public static void main(String[] args)
 	{
-		String test = "paper1:jim,jill:paper2,paper3\n" + //
+		String test = "paper1:jim,jill:paper2,paper3,paper5\n" + //
 				"paper2:john:\n" + //
 				"paper3:michael,jim:paper4\n" + //
 				"paper4:jill:paper2,paper5\n" + //
